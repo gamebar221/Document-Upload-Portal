@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Document Upload Portal</title>
+<!-- <link rel="icon" type="image/png" href="/favicon.png">  this also use to put clg logo-->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    overflow-y: hidden;
+    background: #0a0e1a;
+    position: relative;
+  }
+
+  /* Animated gradient background */
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(135deg, #0d1b3e 0%, #1a0a2e 40%, #0a1f3d 70%, #12082a 100%);
+  }
+
+  /* Floating orbs */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.35;
+    animation: float 8s ease-in-out infinite;
+    z-index: 0;
+  }
+  .orb1 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, #3b2f8f, #1a0a5e);
+    top: -150px; left: -150px;
+    animation-delay: 0s;
+  }
+  .orb2 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, #8f2f6a, #5e0a3a);
+    bottom: -100px; right: -100px;
+    animation-delay: 3s;
+  }
+  .orb3 {
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, #2f5f8f, #0a2a5e);
+    top: 50%; left: 60%;
+    animation-delay: 5s;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -30px) scale(1.05); }
+    66% { transform: translate(-20px, 20px) scale(0.97); }
+  }
+
+  /* Logo watermark — blurred behind everything */
+  .logo-bg {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 750px;
+    height: 750px;
+    background: url('logo.png') center/contain no-repeat;
+    opacity: 0.07;
+    filter: blur(4px) saturate(0.5);
+    z-index: 1;
+    animation: logoPulse 6s ease-in-out infinite;
+  }
+
+  @keyframes logoPulse {
+    0%, 100% { opacity: 0.07; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 0.11; transform: translate(-50%, -50%) scale(1.04); }
+  }
+
+  /* Glassmorphism card */
+  .card {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 440px;
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255,255,255,0.2),
+      0 0 0 1px rgba(255,255,255,0.05);
+    padding: 36px 32px 28px;
+    overflow: hidden;
+  }
+
+  /* Inner shine on card top */
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  }
+
+  /* Logo inside card */
+  .logo-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 22px;
+  }
+  .logo-header img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 12px rgba(100,120,255,0.5));
+    margin-bottom: 10px;
+  }
+
+  h2 {
+    text-align: center;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    margin-bottom: 4px;
+  }
+  p.sub {
+    text-align: center;
+    color: rgba(255,255,255,0.55);
+    font-size: 13px;
+    margin-bottom: 26px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.8);
+    font-size: 13px;
+    letter-spacing: 0.3px;
+  }
+
+  input[type="text"], input[type="file"] {
+    width: 100%;
+    padding: 11px 14px;
+    margin-bottom: 16px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    font-size: 14px;
+    color: #fff;
+    outline: none;
+    transition: border 0.2s, background 0.2s;
+  }
+  input[type="text"]::placeholder { color: rgba(255,255,255,0.3); }
+  input[type="text"]:focus, input[type="file"]:focus {
+    border-color: rgba(120,160,255,0.6);
+    background: rgba(255,255,255,0.12);
+  }
+  input[type="file"] {
+    padding: 9px 14px;
+    color: rgba(255,255,255,0.6);
+    cursor: pointer;
+  }
+
+  button {
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #3b5bdb, #5c3bc4);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.4px;
+    box-shadow: 0 4px 20px rgba(60,90,220,0.4);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 26px rgba(60,90,220,0.55);
+  }
+  button:active { transform: translateY(0); }
+
+  #fileCount {
+    font-size: 12px;
+    color: rgba(120,180,255,0.8);
+    margin-top: -10px;
+    margin-bottom: 14px;
+  }
+
+  #loading {
+    display: none;
+    text-align: center;
+    margin-top: 14px;
+    color: rgba(255,255,255,0.6);
+    font-size: 13px;
+  }
+
+  .note {
+    font-size: 11px;
+    color: rgba(255,255,255,0.3);
+    margin-top: 18px;
+    text-align: center;
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <div class="logo-bg"></div>
+
+  <div class="card">
+    <div class="logo-header">
+      <img src="logo.png" alt="College Logo">
+      <h2>Document Upload Portal</h2>
+    </div>
+    <p class="sub">Enter your details and upload all required files</p>
+
+    <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+      <label for="studentName">Full Name</label>
+      <input type="text" id="studentName" name="studentName" placeholder="e.g. Ashish Kumar" required>
+
+      <label for="rollNo">Roll Number</label>
+      <input type="text" id="rollNo" name="rollNo" placeholder="e.g. 105" required>
+
+      <label for="files">Select Files (PDF / Images)</label>
+      <input type="file" id="files" name="files" multiple required accept=".pdf,.jpg,.jpeg,.png">
+      <div id="fileCount"></div>
+
+      <button type="submit">Upload Documents</button>
+      <div id="loading">⏳ Uploading, please wait...</div>
+    </form>
+
+    <p class="note">Before leaving, please get your documents verified by the administration</p>
+  </div>
+
+  
+
+  <script>
+    const fileInput = document.getElementById('files');
+    const fileCount = document.getElementById('fileCount');
+    const form = document.getElementById('uploadForm');
+    const loading = document.getElementById('loading');
+
+    fileInput.addEventListener('change', () => {
+      const count = fileInput.files.length;
+      fileCount.textContent = count > 0 ? `${count} file(s) selected` : '';
+    });
+
+    form.addEventListener('submit', () => {
+      loading.style.display = 'block';
+    });
+  </script>
+  <footer style="
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  text-align: center;
+  padding: 10px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.3);
+  background: rgba(0,0,0,0.2);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255,255,255,0.07);
+  letter-spacing: 0.3px;
+">Made with ❤️ by CouragE &#x00A9; 2026 MIT Licensed</footer>
+</body>
+</html>
